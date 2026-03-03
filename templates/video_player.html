@@ -1,0 +1,264 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScanX - Video Player</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/video_player.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            
+            <h1>Your Thyroid 3D Videos</h1>
+            <div class="patient-info" id="patientInfo">Loading patient information...</div>
+        </div>
+        
+        <div id="videoContainer">
+            <div class="loading">Loading videos...</div>
+        </div><br />
+        <a href="/" class="back-btn">← Back to Search</a>
+    </div>
+
+    <script>
+        (function() {
+            console.log('=== VIDEO PLAYER PAGE LOADED ===');
+            
+            try {
+                // Get video data from sessionStorage
+                const videoDataStr = sessionStorage.getItem('videoData');
+                const patientInfoStr = sessionStorage.getItem('patientInfo');
+
+                console.log('videoDataStr: ' + (videoDataStr ? 'Found (' + videoDataStr.length + ' chars)' : 'NULL'));
+                console.log('patientInfoStr: ' + (patientInfoStr ? 'Found (' + patientInfoStr.length + ' chars)' : 'NULL'));
+
+                let videoData = [];
+                let patientInfo = {};
+
+                // Parse the data
+                try {
+                    if (videoDataStr) {
+                        videoData = JSON.parse(videoDataStr);
+                        console.log('Parsed videoData: ' + videoData.length + ' videos');
+                    }
+                    if (patientInfoStr) {
+                        patientInfo = JSON.parse(patientInfoStr);
+                        console.log('Parsed patientInfo: ' + JSON.stringify(patientInfo));
+                    }
+                } catch (parseError) {
+                    console.error('Parse error:', parseError);
+                }
+
+                const container = document.getElementById('videoContainer');
+                const patientInfoDiv = document.getElementById('patientInfo');
+
+                // Display patient info
+                if (patientInfo.firstName && patientInfo.lastName) {
+                    patientInfoDiv.textContent = `Patient: ${patientInfo.firstName} ${patientInfo.lastName} | Date: ${patientInfo.apptdate}`;
+                } else {
+                    patientInfoDiv.textContent = 'Patient information unavailable';
+                }
+
+                // Check if we have videos
+                if (!videoData || videoData.length === 0) {
+                    container.innerHTML = ` 
+                        <div class="no-videos">
+                            <h2>No videos found</h2>
+                            <p>The video data could not be loaded. Please go back and try again.</p>
+                            <a href="/" class="back-btn" style="margin-top: 20px; display: inline-block;">← Back to Search</a>
+                        </div>
+                    `;
+                } else {
+                    // Create video grid
+                    const videoGrid = document.createElement('div');
+                    videoGrid.className = 'video-grid';
+                    
+                    videoData.forEach((video, index) => {
+                        const videoCard = document.createElement('div');
+                        videoCard.className = 'video-card';
+                        
+                        const videoId = 'video-' + index;
+                        
+                        videoCard.innerHTML = `
+                            <h3>📹 ${video.fileName || 'Video ' + (index + 1)}</h3>
+                            <video id="${videoId}" controls preload="metadata">
+                                <source src="${video.url}" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        `;
+                        
+                        videoGrid.appendChild(videoCard);
+                    });
+                    
+                    container.innerHTML = '';
+                    container.appendChild(videoGrid);
+                }
+
+            } catch (error) {
+                console.error('Critical error:', error);
+                
+                const container = document.getElementById('videoContainer');
+                if (container) {
+                    container.innerHTML = ` 
+                        <div class="no-videos">
+                            <h2>Error Loading Videos</h2>
+                            <p>An error occurred: ${error.message}</p>
+                            <p>Please check the browser console for more details.</p>
+                            <a href="/" class="back-btn" style="margin-top: 20px; display: inline-block;">← Back to Search</a>
+                        </div>
+                    `;
+                }
+            }
+
+        })();
+    </script>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScanX - Video Player</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/video_player.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            
+            <h1>Your Thyroid 3D Videos</h1>
+            <div class="patient-info" id="patientInfo">Loading patient information...</div>
+        </div>
+        
+        <div id="videoContainer">
+            <div class="loading">Loading videos...</div>
+        </div><br />
+        <a href="/" class="back-btn">← Back to Search</a>
+    </div>
+
+    <script>
+        (function() {
+            console.log('=== VIDEO PLAYER PAGE LOADED ===');
+            
+            // Disable right-click context menu on the entire page
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Disable keyboard shortcuts for saving/downloading
+            document.addEventListener('keydown', function(e) {
+                // Ctrl+S or Cmd+S (Save)
+                if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                    e.preventDefault();
+                    return false;
+                }
+                // Ctrl+Shift+S or Cmd+Shift+S (Save As)
+                if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'S') {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+            
+            try {
+                // Get video data from sessionStorage
+                const videoDataStr = sessionStorage.getItem('videoData');
+                const patientInfoStr = sessionStorage.getItem('patientInfo');
+
+                console.log('videoDataStr: ' + (videoDataStr ? 'Found (' + videoDataStr.length + ' chars)' : 'NULL'));
+                console.log('patientInfoStr: ' + (patientInfoStr ? 'Found (' + patientInfoStr.length + ' chars)' : 'NULL'));
+
+                let videoData = [];
+                let patientInfo = {};
+
+                // Parse the data
+                try {
+                    if (videoDataStr) {
+                        videoData = JSON.parse(videoDataStr);
+                        console.log('Parsed videoData: ' + videoData.length + ' videos');
+                    }
+                    if (patientInfoStr) {
+                        patientInfo = JSON.parse(patientInfoStr);
+                        console.log('Parsed patientInfo: ' + JSON.stringify(patientInfo));
+                    }
+                } catch (parseError) {
+                    console.error('Parse error:', parseError);
+                }
+
+                const container = document.getElementById('videoContainer');
+                const patientInfoDiv = document.getElementById('patientInfo');
+
+                // Display patient info
+                if (patientInfo.firstName && patientInfo.lastName) {
+                    patientInfoDiv.textContent = `Patient: ${patientInfo.firstName} ${patientInfo.lastName} | Date: ${patientInfo.apptdate}`;
+                } else {
+                    patientInfoDiv.textContent = 'Patient information unavailable';
+                }
+
+                // Check if we have videos
+                if (!videoData || videoData.length === 0) {
+                    container.innerHTML = ` 
+                        <div class="no-videos">
+                            <h2>No videos found</h2>
+                            <p>The video data could not be loaded. Please go back and try again.</p>
+                            <a href="/" class="back-btn" style="margin-top: 20px; display: inline-block;">← Back to Search</a>
+                        </div>
+                    `;
+                } else {
+                    // Create video grid
+                    const videoGrid = document.createElement('div');
+                    videoGrid.className = 'video-grid';
+                    
+                    videoData.forEach((video, index) => {
+                        const videoCard = document.createElement('div');
+                        videoCard.className = 'video-card';
+                        
+                        const videoId = 'video-' + index;
+                        
+                        videoCard.innerHTML = `
+                            <h3>📹 ${video.fileName || 'Video ' + (index + 1)}</h3>
+                            <video id="${videoId}" controls preload="metadata" controlsList="nodownload" disablePictureInPicture>
+                                <source src="${video.url}" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        `;
+                        
+                        videoGrid.appendChild(videoCard);
+                    });
+                    
+                    container.innerHTML = '';
+                    container.appendChild(videoGrid);
+                    
+                    // Additional protection: disable right-click on all video elements
+                    document.querySelectorAll('video').forEach(function(video) {
+                        video.addEventListener('contextmenu', function(e) {
+                            e.preventDefault();
+                            return false;
+                        });
+                        
+                        // Disable picture-in-picture programmatically
+                        video.disablePictureInPicture = true;
+                    });
+                }
+
+            } catch (error) {
+                console.error('Critical error:', error);
+                
+                const container = document.getElementById('videoContainer');
+                if (container) {
+                    container.innerHTML = ` 
+                        <div class="no-videos">
+                            <h2>Error Loading Videos</h2>
+                            <p>An error occurred: ${error.message}</p>
+                            <p>Please check the browser console for more details.</p>
+                            <a href="/" class="back-btn" style="margin-top: 20px; display: inline-block;">← Back to Search</a>
+                        </div>
+                    `;
+                }
+            }
+
+        })();
+    </script>
+</body>
+</html>
